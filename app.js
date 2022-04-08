@@ -4,7 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const dbo = require('./connect');
 
-const PORT = 3000;
+const PORT = 8000;
 const app = express();
 
 app.use(cors());

@@ -8,7 +8,6 @@ router.route("/login").post(async function (req, res) {
     const dbConnect = dbo.getDb();
 
     let user = await dbConnect.collection("userData").findOne({ userName: req.body.userName, password: req.body.password })
-    console.log(user);
     if (user) {
         res.status(200).send("Log in successful")
     } else {
@@ -18,25 +17,27 @@ router.route("/login").post(async function (req, res) {
 
 router.route("/generate").post(async function (req, res) {
 
-    const urlS = req.body.urlSent
-    console.log(urlS)
+    const url = req.body.urlent
 
     const dbConnect = dbo.getDb();
 
-    let check = await dbConnect.collection("urlData").findOne({ url: urlS })
+    let check = await dbConnect.collection("urlData").findOne({ url: url })
     if (check) {
+        console.log("Found already existing")
         res.status(200).json(check)
     } else {
-        let urlBin = ""
-        for (var i = 0; i < urlS.length; i++) {
-            urlBin += urlS[i].charCodeAt(0).toString(2)
+        let code = 0
+        for (var i = 0; i < url.length; i++) {
+            code += parseInt(url[i].charCodeAt(0).toString(10), 10)
         }
-        console.log(urlBin)
-        const code = parseInt(urlBin,2)
-        const codeHex = code.toString(16)
-        console.log(code)
-        console.log(codeHex.slice(6))
-        res.status(200).send(urlBin);
+        const newEntry = {
+            ulr: url,
+            visits: 0,
+            code: code
+        }
+        await dbConnect.collection("urlData").insertOne(newEntry)
+        console.log("Inserted new one")
+        res.status(200).json(newEntry);
     }
 });
 
